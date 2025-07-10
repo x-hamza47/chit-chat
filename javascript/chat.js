@@ -24,7 +24,7 @@ $(document).ready(function () {
     },
   });
   //!  Connect to Workerman WebSocket server
-  const socket = new WebSocket("ws://192.168.1.108:2346");
+  const socket = new WebSocket("ws://192.168.1.109:2346");
 
   socket.onopen = () => {
     console.log("✅ Connected to server");
@@ -35,6 +35,8 @@ $(document).ready(function () {
         user_id: parseInt(out_go),
       })
     );
+
+    sendChatFocusStatus(true);
   };
 
   socket.onmessage = (e) => {
@@ -66,6 +68,7 @@ $(document).ready(function () {
       chat_bx.append(msgHTML);
       scrollDown();
 
+
       // Todo: Notification
       if (!isWindowFocused) {
         const notification = new Notification("🔔 New message", {
@@ -79,7 +82,42 @@ $(document).ready(function () {
       }
 
     }
+
+    if (data.type === "typing") {
+      let status_bx = $("#user-status");
+      status_bx.text("typing...").addClass('typing');
+      // if ($("#typing-indicator").length === 0) {
+
+      scrollDown();
+      // }
+    }
+
+    if (data.type === "stop_typing") {
+      let status_bx = $("#user-status");
+      status_bx.text("Active").removeClass('typing'); 
+    }
+
   };
+
+  function sendChatFocusStatus(isFocused) {
+    socket.send(
+      JSON.stringify({
+        type: "chat_focus",
+        user_id: parseInt(out_go),
+        chatting_with: isFocused ? parseInt(in_go) : null,
+      })
+    );
+  }
+
+
+  window.addEventListener("focus", () => {
+    $.post("php/update-read.php", {
+      incoming_id: in_go,
+      outgoing_id: out_go,
+    });
+    sendChatFocusStatus(true)
+  });
+  window.addEventListener("blur", () => sendChatFocusStatus(false));
 
   chat_sendBtn.click(() => {
     const message = input_field.val().trim();
@@ -93,10 +131,41 @@ $(document).ready(function () {
     };
 
     socket.send(JSON.stringify(msgData));
-
+    // 👇 Trigger users list update in other clients
+    socket.send(
+      JSON.stringify({
+        type: "new_message",
+        from: parseInt(out_go),
+        to: parseInt(in_go),
+      })
+    );
     input_field.val("");
     scrollDown();
   });
+
+  // ! Typing Indicator
+  let typingTimeout;
+
+  input_field.on("input", () => {
+    socket.send(
+      JSON.stringify({
+        type: "typing",
+        from: parseInt(out_go),
+        to: parseInt(in_go),
+      })
+    );
+
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.send(
+        JSON.stringify({
+          type: "stop_typing",
+          from: parseInt(out_go),
+          to: parseInt(in_go),
+        })
+      );
+    }, 1000); 
+  });// ! Typin indication end
 
   // $(".chat-area").mouseenter(() => {
   //   chat_bx.addClass("active");
@@ -108,4 +177,6 @@ $(document).ready(function () {
   function scrollDown() {
     chat_bx.scrollTop(chat_bx[0].scrollHeight);
   }
+  
 });
+

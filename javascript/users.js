@@ -18,7 +18,7 @@ $(document).ready(function () {
     Notification.requestPermission();
   }
 
-  const socket = new WebSocket("ws://192.168.1.108:2346");
+  const socket = new WebSocket("ws://192.168.1.109:2346");
 
   socket.onopen = function () {
     console.log("✅ Connected to server");
@@ -34,9 +34,25 @@ $(document).ready(function () {
   socket.onmessage = function (event) {
     const data = JSON.parse(event.data);
     
+    if (data.type === "new_message") {
+      usersList();
+    }
+    
     if (data.type === "status_update") {
       updateUserStatus(data.user_id, data.status);
     }
+
+    // !typin indicators
+    if (data.type === "typing") {
+      $(`#lastmsg-${data.from}`).hide(); 
+      $(`#typing-${data.from}`).show(); 
+    }
+
+    if (data.type === "stop_typing") {
+      $(`#typing-${data.from}`).hide(); 
+      $(`#lastmsg-${data.from}`).show(); 
+    }
+    //!typing indicators end
   };
 
   function updateUserStatus(userId, status) {
@@ -56,15 +72,18 @@ $(document).ready(function () {
     }
   }
 
-  $.ajax({
-    url: "php/users.php",
-    type: "GET",
-    success: function (data) {
-      if (!$(search_bar).hasClass("active")) {
-        $(".users-list").html(data);
-      }
-    },
-  });
+  const usersList = () => {
+    $.ajax({
+      url: "php/users.php",
+      type: "GET",
+      success: function (data) {
+        if (!$(search_bar).hasClass("active")) {
+          $(".users-list").html(data);
+        }
+      },
+    });
+  }
+usersList();
   $(search_bar).keyup(function () {
     let search_term = $(search_bar).val();
 

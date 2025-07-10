@@ -38,22 +38,29 @@ if (!isset($_SESSION['unique_id'])) {
                         header("location: users.php");
                     }
 
+                    $outgoing_id = $user_id;
+                    $incoming_id = $_SESSION['unique_id'];
+
+                    $updateRead = $conn->prepare("UPDATE messages SET is_read = true 
+                         WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
+                    $updateRead->bind_param("ii", $incoming_id, $outgoing_id);
+                    $updateRead->execute();
                     ?>
                     <!-- Content -->
                     <a href="users.php" class="back-icon"><i class="fas fa-arrow-left"></i></a>
                     <img src="php/upload/<?php echo $row['img'];  ?>" alt="">
                     <div class="details">
                         <span><?php echo $row['fname'] . " " . $row['lname'];  ?></span>
-                        <p><?php echo $row['status']; ?> </p>
+                        <p id="user-status"><?php echo $row['status']; ?> </p>
                     </div>
                 </header>
                 <div class="chat-box">
                 </div>
 
                 <form class="typing-area">
-                    <input type="hidden" name="outgoing_id" id="out" value="<?php echo $_SESSION['unique_id']; ?>" hidden>
+                    <input type="hidden" name="outgoing_id" id="out" value="<?php echo $incoming_id; ?>" hidden>
                     <input type="hidden" name="incoming_id" id="in" value="<?php echo $user_id; ?>" hidden>
-                    <input type="text" name="message" class="input-field" placeholder="Type a message here..." autocomplete="off">
+                    <input type="text" name="message" class="input-field" placeholder="Type a message here..." autocomplete="off" autofocus>
                     <button><i class='bx bxl-telegram'></i></button>
 
                 </form>
