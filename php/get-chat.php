@@ -8,7 +8,6 @@ if(isset($_SESSION['unique_id'])){
     $output = "";
     
 $sql = $conn->query("SELECT * FROM messages
-                    -- LEFT JOIN users ON users.unique_id = messages.outgoing_msg_id
                     WHERE (outgoing_msg_id = {$outgoing_id} AND  incoming_msg_id = {$incoming_id})
                     OR (outgoing_msg_id = {$incoming_id} AND  incoming_msg_id = {$outgoing_id}) ORDER BY messages.id") ;
     if ($sql->num_rows > 0) {

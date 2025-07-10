@@ -25,6 +25,19 @@ class ChatHandler extends BaseHandler
                     $this->saveMessage($decoded['from'], $decoded['to'], $decoded['message']);
                 }
                 break;
+                
+            case 'new_message':
+                $this->broadcastNewMessageNotice($decoded['from'], $decoded['to']);
+                break;
+
+            case 'chat_focus':
+                $this->setActiveChat($decoded['user_id'], $decoded['chatting_with'] ?? null);
+                break;
+                
+            case 'typing':
+            case 'stop_typing':
+                $this->sendToUser($decoded['to'], $decoded);
+                break;
         }
     }
 
@@ -60,9 +73,11 @@ class ChatHandler extends BaseHandler
             echo "Database Connection Error : " . $conn->connect_error;
         }
 
-        $sql = $conn->prepare("INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg)
-        VALUES (?, ?, ?)");
-        $sql->bind_param("iis", $to, $from, $message);
+        $is_read = (isset($this->activeChats[$to]) && $this->activeChats[$to] == $from) ? 1 : 0;
+
+        $sql = $conn->prepare("INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg, is_read)
+        VALUES (?, ?, ?, ?)");
+        $sql->bind_param("iisi", $to, $from, $message, $is_read);
         $sql->execute();
         $sql->close();
         $conn->close();
@@ -77,6 +92,7 @@ class ChatHandler extends BaseHandler
             $this->removeConnection($user_id); // * Removing connection
             $this->updateStatus($user_id, 'Offline'); // * Update offline status
             $this->broadcastStatus($user_id, 'Offline'); // * Sending status to other users
+            $this->setActiveChat($user_id, null);
         }
     }
 }

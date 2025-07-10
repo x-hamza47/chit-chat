@@ -8,7 +8,7 @@ include "header.php";
 
 
 <body>
-    <div class="container">
+    <div class="container" style="font-weight: 500;">
         <div class="wrapper">
             <section class="form signup">
                 <!-- HEADER -->

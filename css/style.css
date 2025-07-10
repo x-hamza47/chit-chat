@@ -368,45 +368,30 @@ body{
         }
 
         .notification-dot {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 500;
             color: var(--color-accent);
-            background: var(--color-succes);
-            width: 22px;
-            height: 22px;
+            background: var(--color-primary);
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
+            line-height: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            /* position: relative; */
-            /* text-align: center; */
-
-            /* i, .notifications{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-            } */
-            
-            /* i{
-                z-index: 1 ;
-            } */
-
-            /* .notifications{
-                font-size: 10px;
-                font-weight: 600;
-                color: var(--color-accent);
-                z-index: 2;
-            } */
+            /* box-shadow: 0 0 5px var(--color-secondary), 0 0 5px var(--color-primary);  */
         }
-        /* Use this in Js or php to show offline */
+
         .notification-dot.offline{
             color: transparent;
         }
     }
 
 }
-
+.typing {
+    font-weight: 500;
+    color: var(--color-succes);
+}
 /* Chat Area CSS */
 
 .chat-area {

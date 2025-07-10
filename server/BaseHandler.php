@@ -3,6 +3,7 @@
 class BaseHandler {
 
     protected $users = [];
+    protected $activeChats = [];
 
     protected function updateStatus($user_id, $status){
 
@@ -25,6 +26,33 @@ class BaseHandler {
             // if($uid != $user_id){
                 $conn->send($payload);
             // }
+        }
+    }
+
+    protected function broadcastNewMessageNotice($from, $to)
+    {
+        $conn = $this->getConnection($to);
+        if ($conn) {
+            $conn->send(json_encode([
+                'type' => 'new_message',
+                'from' => $from
+            ]));
+        }
+    }
+    protected function setActiveChat($user_id, $chatting_with)
+    {
+        if ($chatting_with !== null) {
+            $this->activeChats[$user_id] = $chatting_with;
+        } else {
+            unset($this->activeChats[$user_id]);
+        }
+    }
+
+    protected function sendToUser($user_id, $payload){
+        $conn = $this->getConnection($user_id);
+
+        if ($conn){
+            $conn->send(json_encode($payload));
         }
     }
 
