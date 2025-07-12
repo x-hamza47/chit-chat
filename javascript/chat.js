@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
   
   const chat_form = $(".typing-area"),
   input_field = $(".input-field"),
@@ -12,6 +13,8 @@ $(document).ready(function () {
   const in_go = $("#in").val(),
   out_go = $("#out").val();
   
+  //!  Connect to Workerman WebSocket server
+  const socket = new WebSocket("ws://192.168.1.108:2346");
   $.ajax({
     url: "php/get-chat.php",
     type: "POST",
@@ -21,10 +24,16 @@ $(document).ready(function () {
       // if (!chat_bx.hasClass("active")) {
         scrollDown();
       // }
+
+          socket.send(
+            JSON.stringify({
+              type: "mark_read",
+              from: parseInt(in_go),
+              to: parseInt(out_go),
+            })
+          );
     },
   });
-  //!  Connect to Workerman WebSocket server
-  const socket = new WebSocket("ws://192.168.1.109:2346");
 
   socket.onopen = () => {
     console.log("✅ Connected to server");
@@ -52,6 +61,15 @@ $(document).ready(function () {
             <div class="chat outgoing">
               <div class="details">
                 <p>${data.message}</p>
+                <div class="meta">
+                  <span class="time">${data.time}</span>
+                  <span class="tick-icon">
+                      <svg width="15" height="15" viewBox="3 0 25 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M4 12L8 16L20 4" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M11 12L15 16L27 4" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                  </span>
+                </div>
               </div>
               </div>
           `;
@@ -61,6 +79,9 @@ $(document).ready(function () {
             <div class="chat incoming">
               <div class="details">
                 <p>${data.message}</p>
+                  <div class="meta">
+                  <span class="time">${data.time}</span>
+                </div>
               </div>
             </div>
           `;
@@ -83,11 +104,17 @@ $(document).ready(function () {
 
     }
 
+    if (data.type === "read_update") {
+      $(".tick-icon").addClass("readed");
+    }
+    if (data.type === "status_update") {
+      updateUserStatus(data.user_id, data.status);
+    }
+
     if (data.type === "typing") {
       let status_bx = $("#user-status");
       status_bx.text("typing...").addClass('typing');
       // if ($("#typing-indicator").length === 0) {
-
       scrollDown();
       // }
     }
@@ -98,6 +125,21 @@ $(document).ready(function () {
     }
 
   };
+
+    function updateUserStatus(userId, status) {
+      const el = $(`#status-${userId}`);
+      if (el.length === 0) return;
+
+      const isOffline = status.toLowerCase() == "offline";
+
+      if (isOffline) {
+        $('#user-status').text(status);
+        el.removeClass("online");
+      } else {
+        $('#user-status').text(status);
+        el.addClass("online");
+      }
+    }
 
   function sendChatFocusStatus(isFocused) {
     socket.send(
@@ -115,7 +157,16 @@ $(document).ready(function () {
       incoming_id: in_go,
       outgoing_id: out_go,
     });
-    sendChatFocusStatus(true)
+
+    socket.send(
+      JSON.stringify({
+        type: "mark_read",
+        from: parseInt(in_go),
+        to: parseInt(out_go),
+      })
+    );
+
+    sendChatFocusStatus(true);
   });
   window.addEventListener("blur", () => sendChatFocusStatus(false));
 
@@ -128,10 +179,11 @@ $(document).ready(function () {
       from: parseInt(out_go),
       to: parseInt(in_go),
       message: message,
+      // time: new Date().toISOString()
     };
 
     socket.send(JSON.stringify(msgData));
-    // 👇 Trigger users list update in other clients
+    //  Trigger users list update in other clients
     socket.send(
       JSON.stringify({
         type: "new_message",

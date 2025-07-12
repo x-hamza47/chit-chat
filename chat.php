@@ -45,10 +45,11 @@ if (!isset($_SESSION['unique_id'])) {
                          WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
                     $updateRead->bind_param("ii", $incoming_id, $outgoing_id);
                     $updateRead->execute();
+                    $online = ($row['status'] == 'Active') ? 'online' : '';
                     ?>
                     <!-- Content -->
                     <a href="users.php" class="back-icon"><i class="fas fa-arrow-left"></i></a>
-                    <img src="php/upload/<?php echo $row['img'];  ?>" alt="">
+                    <img src="php/upload/<?php echo $row['img'];  ?>" alt="" class="img <?php echo $online;  ?>" id="status-<?php echo $outgoing_id; ?>">
                     <div class="details">
                         <span><?php echo $row['fname'] . " " . $row['lname'];  ?></span>
                         <p id="user-status"><?php echo $row['status']; ?> </p>
@@ -61,7 +62,7 @@ if (!isset($_SESSION['unique_id'])) {
                     <input type="hidden" name="outgoing_id" id="out" value="<?php echo $incoming_id; ?>" hidden>
                     <input type="hidden" name="incoming_id" id="in" value="<?php echo $user_id; ?>" hidden>
                     <input type="text" name="message" class="input-field" placeholder="Type a message here..." autocomplete="off" autofocus>
-                    <button><i class='bx bxl-telegram'></i></button>
+                    <button><i class='bx bxs-send'></i></button>
 
                 </form>
 

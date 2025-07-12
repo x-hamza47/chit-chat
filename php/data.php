@@ -11,12 +11,12 @@ while($row = $result->fetch_assoc()){
         $sql2->execute();
 
         $data = $sql2->get_result();
-        
+
         $row2 = $data->fetch_assoc();
 
         $result2 = ($data->num_rows > 0) ? $row2['msg'] : "No messages available.";
 
-        $msg = (strlen($result2) > 20) ?  substr($result2, 0 ,20) . "..." : $result2;
+        $msg = (strlen($result2) > 24) ?  substr($result2, 0 ,24) . "..." : $result2;
 
         if(isset($row2['outgoing_msg_id'])){
             $you = ($outgoing_id == $row2['outgoing_msg_id']) ? "<b style='font-weight: 600;'>You:</b> " : "";

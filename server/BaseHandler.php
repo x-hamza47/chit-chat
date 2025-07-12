@@ -29,6 +29,33 @@ class BaseHandler {
         }
     }
 
+    protected function markMessagesAsRead($readerId, $senderId)
+    {
+        $conn = new mysqli('localhost', 'root', '', 'chat_app');
+
+        $sql = $conn->prepare("UPDATE messages SET is_read = 1 
+                           WHERE incoming_msg_id = ? AND outgoing_msg_id = ?");
+        $sql->bind_param("ii", $readerId, $senderId);
+        $sql->execute();
+
+        $sql->close();
+        $conn->close();
+    }
+
+    protected function notifySenderRead($readerId, $senderId)
+    {
+        $payload = json_encode([
+            "type" => "read_update",
+            "from" => $readerId,
+            "to" => $senderId
+        ]);
+
+        $senderConn = $this->getConnection($senderId);
+        if ($senderConn) {
+            $senderConn->send($payload);
+        }
+    }
+    
     protected function broadcastNewMessageNotice($from, $to)
     {
         $conn = $this->getConnection($to);
