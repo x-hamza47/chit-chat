@@ -25,6 +25,11 @@ class ChatHandler extends BaseHandler
                     $this->saveMessage($decoded['from'], $decoded['to'], $decoded['message']);
                 }
                 break;
+
+            case 'mark_read':
+                $this->markMessagesAsRead($decoded['from'], $decoded['to']);
+                $this->notifySenderRead($decoded['from'], $decoded['to']);
+                break;
                 
             case 'new_message':
                 $this->broadcastNewMessageNotice($decoded['from'], $decoded['to']);
@@ -45,11 +50,14 @@ class ChatHandler extends BaseHandler
     // ! Send Message 
     private function sendMessage($data)
     {
+        date_default_timezone_set('Asia/Karachi');
+        $date = date('h:i A');
         $messagePayload = json_encode([
             "type" => "message",
             "from" => $data['from'],
             "to" => $data['to'],
             "message" => $data['message'],
+            "time" => $date,
         ]);
 
         foreach([$data['from'],$data['to']] as $uid){
