@@ -18,7 +18,7 @@ $(document).ready(function () {
     Notification.requestPermission();
   }
 
-  const socket = new WebSocket("ws://192.168.1.108:2346");
+  const socket = new WebSocket("ws://192.168.1.106:2346");
 
   socket.onopen = function () {
     console.log("✅ Connected to server");
