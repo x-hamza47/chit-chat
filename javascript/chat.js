@@ -1,20 +1,18 @@
 $(document).ready(function () {
-
-  
   const chat_form = $(".typing-area"),
-  input_field = $(".input-field"),
-  chat_bx = $(".chat-box");
+    input_field = $(".input-field"),
+    chat_bx = $(".chat-box");
   chat_sendBtn = $("button");
-  
+
   chat_form.submit((e) => {
     e.preventDefault();
   });
-  
+
   const in_go = $("#in").val(),
-  out_go = $("#out").val();
-  
+    out_go = $("#out").val();
+
   //!  Connect to Workerman WebSocket server
-  const socket = new WebSocket("ws://192.168.1.108:2346");
+  const socket = new WebSocket("ws://192.168.1.106:2346");
   $.ajax({
     url: "php/get-chat.php",
     type: "POST",
@@ -22,16 +20,17 @@ $(document).ready(function () {
     success: function (data) {
       chat_bx.html(data);
       // if (!chat_bx.hasClass("active")) {
-        scrollDown();
+      scrollDown();
       // }
 
-          socket.send(
-            JSON.stringify({
-              type: "mark_read",
-              from: parseInt(in_go),
-              to: parseInt(out_go),
-            })
-          );
+      socket.send(
+        JSON.stringify({
+          type: "mark_read",
+          from: parseInt(in_go), 
+          to: parseInt(out_go), 
+        })
+      );
+
     },
   });
 
@@ -53,11 +52,16 @@ $(document).ready(function () {
 
     if (data.type === "message") {
       const isWindowFocused = document.hasFocus();
-      let msgHTML = "";
 
-      if (data.from == out_go) {
-        //! Outgoing message
-        msgHTML = `
+      if (
+        (data.from == in_go && data.to == out_go) ||
+        (data.from == out_go && data.to == in_go)
+      ) {
+        let msgHTML = "";
+
+        if (data.from == out_go) {
+          //! Outgoing message
+          msgHTML = `
             <div class="chat outgoing">
               <div class="details">
                 <p>${data.message}</p>
@@ -65,17 +69,17 @@ $(document).ready(function () {
                   <span class="time">${data.time}</span>
                   <span class="tick-icon">
                       <svg width="15" height="15" viewBox="3 0 25 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M4 12L8 16L20 4" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          <path d="M11 12L15 16L27 4" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 12L8 16L20 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M11 12L15 16L27 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                   </span>
                 </div>
               </div>
               </div>
           `;
-      } else {
-        //! Incoming message
-        msgHTML = `
+        } else {
+          //! Incoming message
+          msgHTML = `
             <div class="chat incoming">
               <div class="details">
                 <p>${data.message}</p>
@@ -85,26 +89,32 @@ $(document).ready(function () {
               </div>
             </div>
           `;
+        }
+        chat_bx.append(msgHTML);
+        scrollDown();
+
+        // Todo: Notification
+        if (!isWindowFocused) {
+          const notification = new Notification("🔔 New message", {
+            body: data.message,
+            icon: "./img/android-chrome-192x192.png",
+          });
+
+          setTimeout(() => {
+            notification.close();
+          }, 5000);
+        }
       }
-      chat_bx.append(msgHTML);
-      scrollDown();
-
-
-      // Todo: Notification
-      if (!isWindowFocused) {
-        const notification = new Notification("🔔 New message", {
-          body: data.message,
-          icon: "./img/android-chrome-192x192.png",
-        });
-
-        setTimeout(() => {
-          notification.close();
-        }, 5000);
-      }
-
     }
 
-    if (data.type === "read_update") {
+    if (
+      data.type == "read_update" &&
+      data.from == in_go &&
+      data.to == out_go
+    ) {
+        console.log("📥 Read update received:", data);
+      console.log("hello wordl");
+      
       $(".tick-icon").addClass("readed");
     }
     if (data.type === "status_update") {
@@ -112,34 +122,33 @@ $(document).ready(function () {
     }
 
     if (data.type === "typing") {
-      let status_bx = $("#user-status");
-      status_bx.text("typing...").addClass('typing');
+      let status_bx = $(`#user-status-${data.from}`);
+      status_bx.text("typing...").addClass("typing");
       // if ($("#typing-indicator").length === 0) {
       scrollDown();
       // }
     }
 
     if (data.type === "stop_typing") {
-      let status_bx = $("#user-status");
-      status_bx.text("Active").removeClass('typing'); 
+      let status_bx = $(`#user-status-${data.from}`);
+      status_bx.text("Active").removeClass("typing");
     }
-
   };
 
-    function updateUserStatus(userId, status) {
-      const el = $(`#status-${userId}`);
-      if (el.length === 0) return;
+  function updateUserStatus(userId, status) {
+    const el = $(`#status-${userId}`);
+    if (el.length === 0) return;
 
-      const isOffline = status.toLowerCase() == "offline";
+    const isOffline = status.toLowerCase() == "offline";
 
-      if (isOffline) {
-        $('#user-status').text(status);
-        el.removeClass("online");
-      } else {
-        $('#user-status').text(status);
-        el.addClass("online");
-      }
+    if (isOffline) {
+      $(`#user-status-${userId}`).text(status);
+      el.removeClass("online");
+    } else {
+      $(`#user-status-${userId}`).text(status);
+      el.addClass("online");
     }
+  }
 
   function sendChatFocusStatus(isFocused) {
     socket.send(
@@ -151,20 +160,19 @@ $(document).ready(function () {
     );
   }
 
-
   window.addEventListener("focus", () => {
-    $.post("php/update-read.php", {
-      incoming_id: in_go,
-      outgoing_id: out_go,
-    });
+    // $.post("php/update-read.php", {
+    //   incoming_id: in_go,
+    //   outgoing_id: out_go,
+    // });
 
-    socket.send(
-      JSON.stringify({
-        type: "mark_read",
-        from: parseInt(in_go),
-        to: parseInt(out_go),
-      })
-    );
+    // socket.send(
+    //   JSON.stringify({
+    //     type: "mark_read",
+    //     from: parseInt(in_go),
+    //     to: parseInt(out_go),
+    //   })
+    // );
 
     sendChatFocusStatus(true);
   });
@@ -216,8 +224,8 @@ $(document).ready(function () {
           to: parseInt(in_go),
         })
       );
-    }, 1000); 
-  });// ! Typin indication end
+    }, 1000);
+  }); // ! Typin indication end
 
   // $(".chat-area").mouseenter(() => {
   //   chat_bx.addClass("active");
@@ -229,6 +237,4 @@ $(document).ready(function () {
   function scrollDown() {
     chat_bx.scrollTop(chat_bx[0].scrollHeight);
   }
-  
 });
-

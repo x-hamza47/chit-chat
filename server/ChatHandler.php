@@ -52,6 +52,8 @@ class ChatHandler extends BaseHandler
     {
         date_default_timezone_set('Asia/Karachi');
         $date = date('h:i A');
+        $is_read = (isset($this->activeChats[$data['to']]) && $this->activeChats[$data['to']] == $data['from']);
+
         $messagePayload = json_encode([
             "type" => "message",
             "from" => $data['from'],
@@ -63,6 +65,11 @@ class ChatHandler extends BaseHandler
         foreach([$data['from'],$data['to']] as $uid){
             $conn = $this->getConnection($uid);
             if ($conn) $conn->send($messagePayload);
+        }
+
+       
+        if ($is_read) {
+            $this->notifySenderRead($data['to'], $data['from']); 
         }
 
     }

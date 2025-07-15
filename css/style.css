@@ -424,15 +424,21 @@ header .img {
       inset 0 -30px 30px -30px rgb(0 0 0 / 5%);
     overflow-y: auto;
 
-    /* .new_msg_badge{
-      background: red;
+    .new_msg_badge{
       text-align: center;
+      margin-block: 20px;
+      
       
       span{
         width: max-content;
-        background: rebeccapurple;
+        padding: 5px 10px;
+        font-size: 12px;
+        color: var(--color-accent);
+        background: var(--color-primary);
+        border-radius: 4px;
+        box-shadow: 0 3px 5px var(--color-secondary), 0 0 5px var(--color-primary);
       }
-    } */
+    }
 
     .chat {
       margin: 8px 0;
@@ -482,6 +488,7 @@ header .img {
             color: #ccc;
             font-size: 9px;
             font-weight: 500;
+            user-select: none;
           }
 
           .tick-icon path {
@@ -544,6 +551,7 @@ header .img {
             color: #a3a2a2;
             font-size: 9px;
             font-weight: 500;
+            user-select: none;
           }
         }
       }

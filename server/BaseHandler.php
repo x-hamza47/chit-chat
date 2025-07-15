@@ -31,15 +31,22 @@ class BaseHandler {
 
     protected function markMessagesAsRead($readerId, $senderId)
     {
+        if (!isset($this->activeChats[$readerId]) || $this->activeChats[$readerId] != $senderId) {
+            return;
+        }
         $conn = new mysqli('localhost', 'root', '', 'chat_app');
 
         $sql = $conn->prepare("UPDATE messages SET is_read = 1 
-                           WHERE incoming_msg_id = ? AND outgoing_msg_id = ?");
+                           WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
         $sql->bind_param("ii", $readerId, $senderId);
         $sql->execute();
 
+        // if ($sql->affected_rows > 0) {
+        //     $this->notifySenderRead($readerId, $senderId);
+        // }
         $sql->close();
         $conn->close();
+
     }
 
     protected function notifySenderRead($readerId, $senderId)
