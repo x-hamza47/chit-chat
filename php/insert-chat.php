@@ -3,8 +3,8 @@
 // session_start();
 // if(isset($_SESSION['unique_id'])){
 //     include_once "config.php";
-//     $outgoing_id = $conn->real_escape_string($_POST['outgoing_id']);
-//     $incoming_id = $conn->real_escape_string($_POST['incoming_id']);
+//     $outgoing_id = $conn->real_escape_string($_POST['outgoing_id']); // Current user you
+//     $incoming_id = $conn->real_escape_string($_POST['incoming_id']);//other user
 //     $message = $conn->real_escape_string($_POST['message']);
 
 //     if(!empty($message)){

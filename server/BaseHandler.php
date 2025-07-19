@@ -29,35 +29,39 @@ class BaseHandler {
         }
     }
 
-    protected function markMessagesAsRead($readerId, $senderId)
+    protected function markMessagesAsRead($from, $to)
     {
-        if (!isset($this->activeChats[$readerId]) || $this->activeChats[$readerId] != $senderId) {
-            return;
+        // if (!isset($this->activeChats[$from]) || $this->activeChats[$from] != $to) {
+        //     return;
+        // }
+        // From is sender and To is reciever
+        if ($from === $to) {
+            return; // same user, ignore
         }
         $conn = new mysqli('localhost', 'root', '', 'chat_app');
 
         $sql = $conn->prepare("UPDATE messages SET is_read = 1 
                            WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
-        $sql->bind_param("ii", $readerId, $senderId);
+        $sql->bind_param("ii", $from, $to);
         $sql->execute();
 
-        // if ($sql->affected_rows > 0) {
-        //     $this->notifySenderRead($readerId, $senderId);
+        // if ($sql->affected_rows > 0) { 
+            $this->notifySenderRead($from, $to);
         // }
         $sql->close();
         $conn->close();
 
     }
 
-    protected function notifySenderRead($readerId, $senderId)
+    protected function notifySenderRead($from, $to)
     {
         $payload = json_encode([
             "type" => "read_update",
-            "from" => $readerId,
-            "to" => $senderId
+            "from" => $from,
+            "to" => $to
         ]);
 
-        $senderConn = $this->getConnection($senderId);
+        $senderConn = $this->getConnection($to);
         if ($senderConn) {
             $senderConn->send($payload);
         }
