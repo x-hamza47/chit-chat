@@ -424,19 +424,19 @@ header .img {
       inset 0 -30px 30px -30px rgb(0 0 0 / 5%);
     overflow-y: auto;
 
-    .new_msg_badge{
+    .new_msg_badge {
       text-align: center;
       margin-block: 20px;
-      
-      
-      span{
+
+      span {
         width: max-content;
         padding: 5px 10px;
         font-size: 12px;
         color: var(--color-accent);
         background: var(--color-primary);
         border-radius: 4px;
-        box-shadow: 0 3px 5px var(--color-secondary), 0 0 5px var(--color-primary);
+        box-shadow: 0 3px 5px var(--color-secondary),
+          0 0 5px var(--color-primary);
       }
     }
 
@@ -490,11 +490,20 @@ header .img {
             font-weight: 500;
             user-select: none;
           }
-
+          .tick-icon svg {
+            perspective: 500px;
+            display: inline-block;
+            transform-style: preserve-3d;
+          }
+          
           .tick-icon path {
             stroke: #ccc;
+            transition: stroke 0.3s ease;
+            transform-origin: center;
           }
           .tick-icon.readed path {
+            /* transform: scale(1.2) rotate(-15deg); */
+            animation: tick3DDiagonal 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
             stroke: #4fa6f7ff;
           }
 
@@ -586,4 +595,16 @@ header .img {
       border-radius: 0 5px 5px 0;
     }
   }
+}
+
+@keyframes tick3DDiagonal {
+    0% {
+        transform: rotateY(0deg) scale(1);
+    }
+    /* 50% {
+        transform: rotateY(180deg) rotateX(15deg) scale(1.2);
+    } */
+    100% {
+        transform: rotateY(360deg) scale(1);
+    }
 }
