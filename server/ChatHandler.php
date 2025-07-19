@@ -27,8 +27,9 @@ class ChatHandler extends BaseHandler
                 break;
 
             case 'mark_read':
+                //
                 $this->markMessagesAsRead($decoded['from'], $decoded['to']);
-                $this->notifySenderRead($decoded['from'], $decoded['to']);
+                // $this->notifySenderRead($decoded['from'], $decoded['to']);
                 break;
                 
             case 'new_message':
@@ -70,6 +71,7 @@ class ChatHandler extends BaseHandler
        
         if ($is_read) {
             $this->notifySenderRead($data['to'], $data['from']); 
+            // $this->notifySenderRead($data['from'], $data['to']); 
         }
 
     }

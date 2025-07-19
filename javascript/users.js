@@ -39,7 +39,10 @@ $(document).ready(function () {
     }
     
     if (data.type === "status_update") {
-      updateUserStatus(data.user_id, data.status);
+      setTimeout(() => {
+        updateUserStatus(data.user_id, data.status);
+
+      }, 1000);
     }
 
     // !typin indicators

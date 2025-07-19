@@ -12,8 +12,13 @@ if (isset($_SESSION['unique_id'])) {
                     OR (outgoing_msg_id = {$incoming_id} AND  incoming_msg_id = {$outgoing_id}) ORDER BY messages.id");
 
     if ($sql->num_rows > 0) {
+        // $unreadShown = false;
 
-        $unreadShown = false;
+        // $updateRead = $conn->prepare("UPDATE messages SET is_read = true 
+        //                  WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
+        // $updateRead->bind_param("ii", $outgoing_id, $incoming_id);
+        // $updateRead->execute();
+
 
         while ($row = $sql->fetch_assoc()) {
 
@@ -58,10 +63,6 @@ if (isset($_SESSION['unique_id'])) {
         }
         echo $output;
 
-        $updateRead = $conn->prepare("UPDATE messages SET is_read = true 
-                         WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
-        $updateRead->bind_param("ii", $outgoing_id, $incoming_id);
-        $updateRead->execute();
     }
     $sql->close();
 } else {

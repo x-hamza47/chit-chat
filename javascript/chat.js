@@ -8,31 +8,12 @@ $(document).ready(function () {
     e.preventDefault();
   });
 
-  const in_go = $("#in").val(),
-    out_go = $("#out").val();
+  const in_go = $("#in").val(), // user you r chatting with
+    out_go = $("#out").val(); // Current User (you)
 
   //!  Connect to Workerman WebSocket server
   const socket = new WebSocket("ws://192.168.1.106:2346");
-  $.ajax({
-    url: "php/get-chat.php",
-    type: "POST",
-    data: { inco_id: in_go, outgo_id: out_go },
-    success: function (data) {
-      chat_bx.html(data);
-      // if (!chat_bx.hasClass("active")) {
-      scrollDown();
-      // }
 
-      socket.send(
-        JSON.stringify({
-          type: "mark_read",
-          from: parseInt(in_go), 
-          to: parseInt(out_go), 
-        })
-      );
-
-    },
-  });
 
   socket.onopen = () => {
     console.log("✅ Connected to server");
@@ -45,12 +26,31 @@ $(document).ready(function () {
     );
 
     sendChatFocusStatus(true);
+  
+    $.ajax({
+      url: "php/get-chat.php",
+      type: "POST",
+      data: { inco_id: in_go, outgo_id: out_go },
+      success: function (data) {
+        chat_bx.html(data);
+        // if (!chat_bx.hasClass("active")) {
+        scrollDown();
+        // }
+        socket.send(
+          JSON.stringify({
+            type: "mark_read",
+            from: parseInt(out_go), // current user (you)
+            to: parseInt(in_go),//other user
+          })
+        );
+      },
+    });
   };
-
   socket.onmessage = (e) => {
     const data = JSON.parse(e.data);
 
     if (data.type === "message") {
+      $(".new_msg_badge").fadeOut();
       const isWindowFocused = document.hasFocus();
 
       if (
@@ -94,27 +94,29 @@ $(document).ready(function () {
         scrollDown();
 
         // Todo: Notification
-        if (!isWindowFocused) {
-          const notification = new Notification("🔔 New message", {
-            body: data.message,
-            icon: "./img/android-chrome-192x192.png",
-          });
+        // if (!isWindowFocused) {
+        //   const notification = new Notification("🔔 New message", {
+        //     body: data.message,
+        //     icon: "./img/android-chrome-192x192.png",
+        //   });
 
-          setTimeout(() => {
-            notification.close();
-          }, 5000);
-        }
+        //   setTimeout(() => {
+        //     notification.close();
+        //   }, 5000);
+        // }
       }
     }
 
-    if (
-      data.type == "read_update" &&
-      data.from == in_go &&
-      data.to == out_go
-    ) {
-        console.log("📥 Read update received:", data);
-      console.log("hello wordl");
-      
+    if (data.type == "read_update"
+      //  && data.from == in_go 
+      //  && data.to == out_go
+      ) {
+      console.log(
+        "📥 Read update received:",
+        data,
+        `This is InGO[OTher] : ${in_go} --- This is OutGO[YOu] : ${out_go}`
+      );
+
       $(".tick-icon").addClass("readed");
     }
     if (data.type === "status_update") {
@@ -175,6 +177,13 @@ $(document).ready(function () {
     // );
 
     sendChatFocusStatus(true);
+    socket.send(
+      JSON.stringify({
+        type: "mark_read",
+        from: parseInt(out_go), // current user(YOou)
+        to: parseInt(in_go),// Chatting with
+      })
+    );
   });
   window.addEventListener("blur", () => sendChatFocusStatus(false));
 
