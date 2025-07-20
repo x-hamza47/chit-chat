@@ -14,7 +14,7 @@ search_btn.addEventListener("click", () => {
 });
 
 $(document).ready(function () {
-  if (Notification.permission !== "granted") { 
+  if (Notification.permission !== "granted") {
     Notification.requestPermission();
   }
 
@@ -33,36 +33,40 @@ $(document).ready(function () {
 
   socket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-    
+
     if (data.type === "new_message") {
       usersList();
     }
-    
-    if (data.type === "status_update") {
-      setTimeout(() => {
-        updateUserStatus(data.user_id, data.status);
 
-      }, 1000);
+    if (data.type === "status_update") {
+      // setTimeout(() => {
+        updateUserStatus(data.user_id, data.status);
+      // }, 1000);
     }
 
     // !typin indicators
     if (data.type === "typing") {
-      $(`#lastmsg-${data.from}`).hide(); 
-      $(`#typing-${data.from}`).show(); 
+      $(`#lastmsg-${data.from}`).hide();
+      $(`#typing-${data.from}`).show();
     }
 
     if (data.type === "stop_typing") {
-      $(`#typing-${data.from}`).hide(); 
-      $(`#lastmsg-${data.from}`).show(); 
+      $(`#typing-${data.from}`).hide();
+      $(`#lastmsg-${data.from}`).show();
     }
     //!typing indicators end
+
+    if (data.type == "read_update") {
+      console.log("📥 Read update received:", data);
+      $(`#lastmsg-${data.from} .tick-icon`).addClass("readed");
+    }
   };
 
   function updateUserStatus(userId, status) {
     const el = $(`#status-${userId}`);
     if (el.length === 0) return;
 
-    if(userId == CURRENT_USER_ID){
+    if (userId == CURRENT_USER_ID) {
       el.text(status);
     }
 
@@ -85,8 +89,8 @@ $(document).ready(function () {
         }
       },
     });
-  }
-usersList();
+  };
+  usersList();
   $(search_bar).keyup(function () {
     let search_term = $(search_bar).val();
 

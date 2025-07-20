@@ -238,7 +238,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 20px;
+    padding-block: 10px;
     border-bottom: 1px solid #e6e6e6;
 
     & img {
@@ -342,10 +342,9 @@ header .img {
 
   /* Users List ScrollBar End */
   & a {
-    padding-right: 15px;
+    padding-right: 20px;
     margin-top: 2px;
     margin-bottom: 10px;
-    page-break-after: 10px;
     border-bottom-color: #f1f1f1;
 
     &:last-child {
@@ -361,9 +360,23 @@ header .img {
     .content p {
       font-size: 14px;
       color: #67676a;
+      display: flex;
+      align-items: stretch;
+      column-gap: 6px;
+
+
+      .tick-icon path {
+        /* stroke: #ccc; */
+        transition: stroke 0.3s ease;
+        transform-origin: center;
+      }
+      .tick-icon.readed path {
+        stroke: #4fa6f7ff;
+      }
     }
 
     .notification-dot {
+      position: relative;
       font-size: 10px;
       font-weight: 500;
       color: var(--color-accent);
@@ -376,6 +389,19 @@ header .img {
       align-items: center;
       justify-content: center;
       /* box-shadow: 0 0 5px var(--color-secondary), 0 0 5px var(--color-primary);  */
+
+      .meta {
+        position: absolute;
+        top: -22px;
+        width: max-content;
+
+        .time {
+          color: var(--color-primary);
+          font-size: 10px;
+          font-weight: 500;
+          user-select: none;
+        }
+      }
     }
 
     .notification-dot.offline {
@@ -495,7 +521,7 @@ header .img {
             display: inline-block;
             transform-style: preserve-3d;
           }
-          
+
           .tick-icon path {
             stroke: #ccc;
             transition: stroke 0.3s ease;
@@ -503,7 +529,8 @@ header .img {
           }
           .tick-icon.readed path {
             /* transform: scale(1.2) rotate(-15deg); */
-            animation: tick3DDiagonal 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation: tick3DDiagonal 0.6s cubic-bezier(0.25, 1, 0.5, 1)
+              forwards;
             stroke: #4fa6f7ff;
           }
 
@@ -598,13 +625,13 @@ header .img {
 }
 
 @keyframes tick3DDiagonal {
-    0% {
-        transform: rotateY(0deg) scale(1);
-    }
-    /* 50% {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+  /* 50% {
         transform: rotateY(180deg) rotateX(15deg) scale(1.2);
     } */
-    100% {
-        transform: rotateY(360deg) scale(1);
-    }
+  100% {
+    transform: rotateY(360deg) scale(1);
+  }
 }

@@ -23,7 +23,7 @@ if (isset($_SESSION['unique_id'])) {
         while ($row = $sql->fetch_assoc()) {
 
             $time = date('h:i A', strtotime($row['created_at']));
-            $readed = ($row['is_read']) ? 'readed' : '';
+            $readed = ($row['is_read']) ? 'readed' : ''; 
 
             if ($row['outgoing_msg_id'] === $outgoing_id) {
 
