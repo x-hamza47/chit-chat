@@ -15,7 +15,7 @@ include "header.php";
                 <header>Hacker's Chat</header>
                 <!-- Form Start -->
                 <form action="" enctype="multipart/form-data">
-                    <div class="error-txt">This is an error Message.</div>
+                    <div class="error-txt"></div>
                     <!-- Profile-pic -->
                     <div class=" image profile-wrapper">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541" id="preview" class="profile-image" alt="Profile" />
@@ -25,18 +25,18 @@ include "header.php";
                     </div>
                     <input type="file" id="fileInput" accept="image/*" name="image" />
                     <!-- profile pic end -->
-                    <div class="name-details">
+                    <!-- <div class="name-details"> -->
                         <!-- First Name  -->
                         <div class="field input">
-                            <label>First Name</label>
-                            <input type="text" name="fname" placeholder="First Name" autocomplete="off">
+                            <label>Full Name</label>
+                            <input type="text" name="fullname" placeholder="Enter your name" autocomplete="off">
                         </div>
                         <!-- Last Name -->
-                        <div class="field input">
+                        <!-- <div class="field input">
                             <label>Last Name</label>
                             <input type="text" name="lname" placeholder="Last Name" autocomplete="off">
-                        </div>
-                    </div>
+                        </div> -->
+                    <!-- </div> -->
                     <!-- Email -->
                     <div class="field input">
                         <label>User Name</label>

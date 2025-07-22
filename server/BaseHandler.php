@@ -9,7 +9,7 @@ class BaseHandler {
 
         $conn = new mysqli('localhost', 'root', '', 'chat_app');
         $sql = $conn->prepare('UPDATE users SET status = ? WHERE unique_id = ?');
-        $sql->bind_param("si",$status, $user_id);
+        $sql->bind_param("ss",$status, $user_id);
         $sql->execute();
         $sql->close();
         $conn->close();
@@ -42,7 +42,7 @@ class BaseHandler {
 
         $sql = $conn->prepare("UPDATE messages SET is_read = 1 
                            WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
-        $sql->bind_param("ii", $from, $to);
+        $sql->bind_param("ss", $from, $to);
         $sql->execute();
 
         // if ($sql->affected_rows > 0) { 

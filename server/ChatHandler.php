@@ -94,7 +94,7 @@ class ChatHandler extends BaseHandler
 
         $sql = $conn->prepare("INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg, is_read)
         VALUES (?, ?, ?, ?)");
-        $sql->bind_param("iisi", $to, $from, $message, $is_read);
+        $sql->bind_param("sssi", $to, $from, $message, $is_read);
         $sql->execute();
         $sql->close();
         $conn->close();

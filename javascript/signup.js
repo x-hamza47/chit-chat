@@ -17,13 +17,14 @@ $(document).ready(function(){
             data : formData,
             contentType: false, 
             processData: false,
-            success : function(data){
-                    if (data === "Success") {
+            success : function(response){
+                let data = JSON.parse(response)
+                    if (data.status) {
                         location.href = "index.php";
-                        console.log(data);
+                        // console.log(data);
                     }else{
-                        console.log(data);
-                        errorTxt.text(data);
+                        // console.log(data);
+                        errorTxt.text(data.message);
                         errorTxt.css("display", "block");
                     }
             }

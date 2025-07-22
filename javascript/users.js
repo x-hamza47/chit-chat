@@ -26,7 +26,7 @@ $(document).ready(function () {
     socket.send(
       JSON.stringify({
         type: "init",
-        user_id: parseInt(CURRENT_USER_ID),
+        user_id: CURRENT_USER_ID,
       })
     );
   };
