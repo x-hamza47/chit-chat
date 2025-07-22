@@ -3,11 +3,12 @@
 while($row = $result->fetch_assoc()){   
      $you = '';
                   
-        $sql2 = $conn->prepare("SELECT * FROM messages WHERE (incoming_msg_id = ? 
-          OR outgoing_msg_id = ? ) AND (outgoing_msg_id = ? 
-          OR incoming_msg_id = ? ) ORDER BY created_at DESC LIMIT 1");
+        $sql2 = $conn->prepare("SELECT * FROM messages
+            WHERE (outgoing_msg_id = ? AND incoming_msg_id = ?)
+               OR (outgoing_msg_id = ? AND incoming_msg_id = ?)
+            ORDER BY created_at DESC LIMIT 1");
 
-        $sql2->bind_param("iiii" ,$row['unique_id'], $row['unique_id'], $outgoing_id, $outgoing_id);
+        $sql2->bind_param("ssss" ,$row['unique_id'], $outgoing_id, $outgoing_id, $row['unique_id']);
         $sql2->execute();
 
         $data = $sql2->get_result();
@@ -21,7 +22,7 @@ while($row = $result->fetch_assoc()){
         if(isset($row2['outgoing_msg_id']) && $outgoing_id == $row2['outgoing_msg_id']){
 
         $is_read = $conn->prepare("SELECT is_read FROM messages WHERE id = ? LIMIT 1");
-        $is_read->bind_param("i", $row2['id']);
+        $is_read->bind_param("s", $row2['id']);
         $is_read->execute();
         $res_read = $is_read->get_result();
         $rowRead = $res_read->fetch_assoc();
@@ -41,7 +42,7 @@ while($row = $result->fetch_assoc()){
     $unread_count = 0;
         $checkUnread = $conn->prepare("SELECT COUNT(id) AS unread FROM messages 
         WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
-        $checkUnread->bind_param("ii", $outgoing_id, $row['unique_id']);
+        $checkUnread->bind_param("ss", $outgoing_id, $row['unique_id']);
         $checkUnread->execute();
         $res_unread = $checkUnread->get_result();
 
@@ -64,9 +65,9 @@ while($row = $result->fetch_assoc()){
 
     $output .=  '<a href="chat.php?user_id='.$row['unique_id'].'">
                 <div class="content">
-                <img src="php/upload/'. $row['img'] . '" alt="" class="list-imgs ' . $online . '" id="status-' . $row['unique_id'] . '">
+                <img src="upload/'. $row['img'] . '" alt="" class="list-imgs ' . $online . '" id="status-' . $row['unique_id'] . '">
                 <div class="details">
-                    <span>'. $row['fname'] . " " . $row['lname'] .'</span>
+                    <span>'. $row['fullname'] .'</span>
                     <p id="lastmsg-'. $row['unique_id'] .'">'. $you . $msg . '</p> 
                     <div class="typing" id="typing-' . $row['unique_id'] . '" style="display: none;">typing...</div>
                 </div>

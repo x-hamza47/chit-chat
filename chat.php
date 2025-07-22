@@ -29,7 +29,7 @@ if (!isset($_SESSION['unique_id'])) {
                     <?php
 
                     $user_id = $conn->real_escape_string($_GET['user_id']);
-                    $sql = "SELECT unique_id, fname, lname, img, status FROM users WHERE unique_id = {$user_id}";
+                    $sql = "SELECT unique_id, fullname, img, status FROM users WHERE unique_id = '{$user_id}'";
                     $result = $conn->query($sql);
 
                     if ($result->num_rows > 0) {
@@ -46,9 +46,9 @@ if (!isset($_SESSION['unique_id'])) {
                     ?>
                     <!-- Content -->
                     <a href="users.php" class="back-icon"><i class="fas fa-arrow-left"></i></a>
-                    <img src="php/upload/<?php echo $row['img'];  ?>" alt="" class="img <?php echo $online;  ?>" id="status-<?php echo $outgoing_id; ?>">
+                    <img src="upload/<?php echo $row['img'];  ?>" alt="" class="img <?php echo $online;  ?>" id="status-<?php echo $outgoing_id; ?>">
                     <div class="details">
-                        <span><?php echo $row['fname'] . " " . $row['lname'];  ?></span>
+                        <span><?php echo $row['fullname'] ;  ?></span>
                         <p id="user-status-<?php echo $outgoing_id; ?>"><?php echo $row['status']; ?> </p>
                     </div>
                 </header>

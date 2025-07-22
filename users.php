@@ -12,9 +12,9 @@ if (!isset($_SESSION['unique_id'])) {
 //     $sql2->execute();
 
 //     if ($sql2->execute()) {
-//         session_unset();
-//         session_destroy();
-//         header("location: index.php");
+        // session_unset();
+        // session_destroy();
+        // header("location: index.php");
 //     }
 // }
 
@@ -50,16 +50,16 @@ if (!isset($_SESSION['unique_id'])) {
                     <div class="content">
                         <?php
 
-                        $sql = "SELECT unique_id, fname, lname, img FROM users WHERE unique_id = {$_SESSION['unique_id']}";
+                        $sql = "SELECT unique_id, fullname, img FROM users WHERE unique_id = '{$_SESSION['unique_id']}'";
                         $result = $conn->query($sql);
 
                         if ($result->num_rows > 0) {
                             $row = $result->fetch_assoc();
                         }
                         ?>
-                        <img src="php/upload/<?php echo $row['img']; ?>" alt="">
+                        <img src="upload/<?php echo $row['img']; ?>" alt="">
                         <div class="details">
-                            <span><?php echo $row['fname'] . " " . $row['lname']; ?></span>
+                            <span><?php echo $row['fullname']; ?></span>
                             <p id="status-<?php echo $row['unique_id']; ?>"></p>
                         </div>
 
@@ -82,7 +82,7 @@ if (!isset($_SESSION['unique_id'])) {
 
 </body>
 <script>
-    const CURRENT_USER_ID = <?php echo $_SESSION['unique_id']; ?>;
+    const CURRENT_USER_ID = "<?php echo $_SESSION['unique_id']; ?>";
 </script>
 <script src="javascript/users.js"></script>
 

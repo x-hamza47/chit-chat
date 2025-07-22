@@ -21,7 +21,7 @@ $(document).ready(function () {
     socket.send(
       JSON.stringify({
         type: "init",
-        user_id: parseInt(out_go),
+        user_id: out_go,
       })
     );
 
@@ -30,17 +30,19 @@ $(document).ready(function () {
     $.ajax({
       url: "php/get-chat.php",
       type: "POST",
-      data: { inco_id: in_go, outgo_id: out_go },
+      data: { inco_id: in_go },
       success: function (data) {
-        chat_bx.html(data);
+        chat_bx.html(data);    
+    
+        
         // if (!chat_bx.hasClass("active")) {
         scrollDown();
         // }
         socket.send(
           JSON.stringify({
             type: "mark_read",
-            from: parseInt(out_go), // current user (you)
-            to: parseInt(in_go),//other user
+            from: out_go, // current user (you)
+            to: in_go,//other user
           })
         );
       },
@@ -69,8 +71,8 @@ $(document).ready(function () {
                   <span class="time">${data.time}</span>
                   <span class="tick-icon">
                       <svg width="15" height="15" viewBox="3 0 25 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M4 12L8 16L20 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          <path d="M11 12L15 16L27 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M4 12L8 16L20 4" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M11 12L15 16L27 4" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                   </span>
                 </div>
@@ -156,8 +158,8 @@ $(document).ready(function () {
     socket.send(
       JSON.stringify({
         type: "chat_focus",
-        user_id: parseInt(out_go),
-        chatting_with: isFocused ? parseInt(in_go) : null,
+        user_id: out_go,
+        chatting_with: isFocused ? in_go : null,
       })
     );
   }
@@ -180,8 +182,8 @@ $(document).ready(function () {
     socket.send(
       JSON.stringify({
         type: "mark_read",
-        from: parseInt(out_go), // current user(YOou)
-        to: parseInt(in_go),// Chatting with
+        from: out_go, // current user(YOou)
+        to: in_go,// Chatting with
       })
     );
   });
@@ -193,8 +195,8 @@ $(document).ready(function () {
 
     const msgData = {
       type: "message",
-      from: parseInt(out_go),
-      to: parseInt(in_go),
+      from: out_go,
+      to: in_go,
       message: message,
       // time: new Date().toISOString()
     };
@@ -204,8 +206,8 @@ $(document).ready(function () {
     socket.send(
       JSON.stringify({
         type: "new_message",
-        from: parseInt(out_go),
-        to: parseInt(in_go),
+        from: out_go,
+        to: in_go,
       })
     );
     input_field.val("");
@@ -219,8 +221,8 @@ $(document).ready(function () {
     socket.send(
       JSON.stringify({
         type: "typing",
-        from: parseInt(out_go),
-        to: parseInt(in_go),
+        from: out_go,
+        to: in_go,
       })
     );
 
@@ -229,8 +231,8 @@ $(document).ready(function () {
       socket.send(
         JSON.stringify({
           type: "stop_typing",
-          from: parseInt(out_go),
-          to: parseInt(in_go),
+          from: out_go,
+          to: in_go,
         })
       );
     }, 1000);
