@@ -118,8 +118,41 @@ class User extends DB
         exit;
     }
 
+    public static function search(string $searchTerm, string $outgoing_id): array
+    {
+        try {
+            $conn = parent::getConnection();
+            $stmt = $conn->prepare("
+                SELECT * FROM users 
+                WHERE unique_id != :out_id
+                  AND fullname LIKE :search
+            ");
+            $stmt->execute([
+                ':out_id' => $outgoing_id,
+                ':search' => "%$searchTerm%"
+            ]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+
+            error_log("User search error: " . $e->getMessage());
+            return [];
+            
+        }
+    }
+
+    public static function find(string $id): ?array
+    {
+        $conn = parent::getConnection();
+        $stmt = $conn->prepare("SELECT unique_id, fullname, img, status FROM users WHERE unique_id = :id");
+        $stmt->execute([':id' => $id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user ?: null;
+    }
+
     // HACK: update status
-    private static function updateStatus($user_id, $status)
+    public static function updateStatus($user_id, $status)
     {
         try {
             $conn = parent::getConnection();
@@ -151,4 +184,5 @@ class User extends DB
             return [];
         }
     }
+
 }

@@ -12,7 +12,7 @@ $(document).ready(function () {
     out_go = $("#out").val(); // Current User (you)
 
   //!  Connect to Workerman WebSocket server
-  const socket = new WebSocket("ws://192.168.1.106:2346");
+  const socket = new WebSocket("ws://192.168.1.107:2346");
 
 
   socket.onopen = () => {

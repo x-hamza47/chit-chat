@@ -5,15 +5,6 @@ class BaseHandler {
     protected $users = [];
     protected $activeChats = [];
 
-    protected function updateStatus($user_id, $status){
-
-        $conn = new mysqli('localhost', 'root', '', 'chat_app');
-        $sql = $conn->prepare('UPDATE users SET status = ? WHERE unique_id = ?');
-        $sql->bind_param("ss",$status, $user_id);
-        $sql->execute();
-        $sql->close();
-        $conn->close();
-    }
 
     protected function broadcastStatus($user_id, $status){
         $payload = json_encode([

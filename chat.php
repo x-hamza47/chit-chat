@@ -1,21 +1,32 @@
 <?php
+
+use App\User;
+
 session_start();
-include_once "php/config.php";
+require_once __DIR__ . '/vendor/autoload.php';
+
 if (!isset($_SESSION['unique_id'])) {
     header("Location: index.php");
+    exit;
 }
-// elseif(time() - $_SESSION['last_online'] > 900){
-//     $status = "offline";
 
-//     $sql2 = $conn->prepare("UPDATE users SET status = ? WHERE unique_id = ?");
-//     $sql2->bind_param("si", $status, $_SESSION['unique_id']);
+$user_id = $_GET['user_id'] ?? '';
 
-//     if($sql2->execute()){
-//       session_unset();
-//       session_destroy();
-//       header("location: index.php");
-//     }
-// }
+if (!$user_id) {
+    header("location: users.php");
+    exit;
+}
+
+$user = User::find($user_id);
+
+if (!$user) {
+    header("location: users.php");
+    exit;
+}
+
+$outgoing_id = $user_id;
+$incoming_id = $_SESSION['unique_id'];
+$online = ($user['status'] == 'Active') ? 'online' : '';
 ?>
 
 <?php include_once "header.php"; ?>
@@ -26,30 +37,12 @@ if (!isset($_SESSION['unique_id'])) {
             <section class="chat-area">
                 <!-- Header -->
                 <header>
-                    <?php
-
-                    $user_id = $conn->real_escape_string($_GET['user_id']);
-                    $sql = "SELECT unique_id, fullname, img, status FROM users WHERE unique_id = '{$user_id}'";
-                    $result = $conn->query($sql);
-
-                    if ($result->num_rows > 0) {
-                        $row = $result->fetch_assoc();
-                    } else {
-                        header("location: users.php");
-                    }
-
-                    $outgoing_id = $user_id;
-                    $incoming_id = $_SESSION['unique_id'];
-
-
-                    $online = ($row['status'] == 'Active') ? 'online' : '';
-                    ?>
                     <!-- Content -->
                     <a href="users.php" class="back-icon"><i class="fas fa-arrow-left"></i></a>
-                    <img src="upload/<?php echo $row['img'];  ?>" alt="" class="img <?php echo $online;  ?>" id="status-<?php echo $outgoing_id; ?>">
+                    <img src="upload/<?= $user['img'];  ?>" alt="" class="img <?= $online; ?>" id="status-<?= $outgoing_id; ?>">
                     <div class="details">
-                        <span><?php echo $row['fullname'] ;  ?></span>
-                        <p id="user-status-<?php echo $outgoing_id; ?>"><?php echo $row['status']; ?> </p>
+                        <span><?= $user['fullname']; ?></span>
+                        <p id="user-status-<?= $outgoing_id; ?>"><?= $user['status']; ?> </p>
                     </div>
                 </header>
                 <div class="chat-box">
@@ -57,8 +50,8 @@ if (!isset($_SESSION['unique_id'])) {
                 </div>
 
                 <form class="typing-area">
-                    <input type="hidden" name="outgoing_id" id="out" value="<?php echo $incoming_id; ?>" hidden>
-                    <input type="hidden" name="incoming_id" id="in" value="<?php echo $user_id; ?>" hidden>
+                    <input type="hidden" name="outgoing_id" id="out" value="<?= $incoming_id; ?>" hidden>
+                    <input type="hidden" name="incoming_id" id="in" value="<?= $outgoing_id; ?>" hidden>
                     <input type="text" name="message" class="input-field" placeholder="Type a message here..." autocomplete="off" autofocus>
                     <button><i class='bx bxs-send'></i></button>
 

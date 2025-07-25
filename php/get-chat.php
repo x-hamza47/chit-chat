@@ -37,7 +37,7 @@ foreach ($messages as $msg) {
                             <p>' . htmlspecialchars($msg['msg']) . '</p>
                             <div class="meta">
                                 <span class="time">' . $time . '</span>
-                                <span class="tick-icon ' . ($readed ? 'readed': '') . '">
+                                <span class="tick-icon ' . (($msg['is_read']) ? 'readed': '') . '">
                                     <svg width="15" height="15" viewBox="3 0 25 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4 12L8 16L20 4" stroke="' . $readed . '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         <path d="M11 12L15 16L27 4" stroke="' . $readed . '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
