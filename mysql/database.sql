@@ -30,6 +30,16 @@ ALTER TABLE users
     MODIFY unique_id CHAR(36) NOT NULL,
     ADD UNIQUE (unique_id);
 
+-- ALTER TABLE users 
+--     MODIFY unique_id BINARY(16) NOT NULL;
+
 ALTER TABLE messages
     MODIFY incoming_msg_id CHAR(36) NOT NULL,
     MODIFY outgoing_msg_id CHAR(36) NOT NULL;
+
+-- ALTER TABLE messages 
+--     MODIFY incoming_msg_id BINARY(16) NOT NULL,
+--     MODIFY outgoing_msg_id BINARY(16) NOT NULL;
+
+CREATE INDEX idx_incoming ON messages (incoming_msg_id);
+CREATE INDEX idx_outgoing ON messages (outgoing_msg_id);

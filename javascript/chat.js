@@ -113,11 +113,6 @@ $(document).ready(function () {
       //  && data.from == in_go 
       //  && data.to == out_go
       ) {
-      console.log(
-        "📥 Read update received:",
-        data,
-        `This is InGO[OTher] : ${in_go} --- This is OutGO[YOu] : ${out_go}`
-      );
 
       $(".tick-icon").addClass("readed");
     }
@@ -165,18 +160,6 @@ $(document).ready(function () {
   }
 
   window.addEventListener("focus", () => {
-    // $.post("php/update-read.php", {
-    //   incoming_id: in_go,
-    //   outgoing_id: out_go,
-    // });
-
-    // socket.send(
-    //   JSON.stringify({
-    //     type: "mark_read",
-    //     from: parseInt(in_go),
-    //     to: parseInt(out_go),
-    //   })
-    // );
 
     sendChatFocusStatus(true);
     socket.send(
@@ -198,7 +181,6 @@ $(document).ready(function () {
       from: out_go,
       to: in_go,
       message: message,
-      // time: new Date().toISOString()
     };
 
     socket.send(JSON.stringify(msgData));
