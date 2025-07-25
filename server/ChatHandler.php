@@ -1,7 +1,6 @@
 <?php
 
 use App\Message;
-use App\User;
 
 require_once __DIR__ . '/BaseHandler.php';
 
@@ -18,7 +17,6 @@ class ChatHandler extends BaseHandler
 
             case 'init':
                 $this->addConnection($decoded['user_id'], $conn);
-                User::updateStatus($decoded['user_id'], 'Active');
                 $this->broadcastStatus($decoded['user_id'], 'Active');
                 break;
 
@@ -27,9 +25,7 @@ class ChatHandler extends BaseHandler
                 break;
 
             case 'mark_read':
-                //
                 $this->markMessagesAsRead($decoded['from'], $decoded['to']);
-                // $this->notifySenderRead($decoded['from'], $decoded['to']);
                 break;
                 
             case 'new_message':
@@ -82,7 +78,6 @@ class ChatHandler extends BaseHandler
             $user_id = $conn->user_id;
 
             $this->removeConnection($user_id); // * Removing connection
-            User::updateStatus($user_id, 'Offline'); // * Update offline status
             $this->broadcastStatus($user_id, 'Offline'); // * Sending status to other users
             $this->setActiveChat($user_id, null);
         }

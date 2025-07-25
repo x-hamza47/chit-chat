@@ -6,7 +6,6 @@ if (isset($_SESSION['unique_id'])) {
 include "header.php";
 ?>
 
-
 <body>
     <div class="container" style="font-weight: 500;">
         <div class="wrapper">
@@ -25,18 +24,11 @@ include "header.php";
                     </div>
                     <input type="file" id="fileInput" accept="image/*" name="image" />
                     <!-- profile pic end -->
-                    <!-- <div class="name-details"> -->
-                        <!-- First Name  -->
-                        <div class="field input">
-                            <label>Full Name</label>
-                            <input type="text" name="fullname" placeholder="Enter your name" autocomplete="off">
-                        </div>
-                        <!-- Last Name -->
-                        <!-- <div class="field input">
-                            <label>Last Name</label>
-                            <input type="text" name="lname" placeholder="Last Name" autocomplete="off">
-                        </div> -->
-                    <!-- </div> -->
+                    <!-- Name  -->
+                    <div class="field input">
+                        <label>Full Name</label>
+                        <input type="text" name="fullname" placeholder="Enter your name" autocomplete="off">
+                    </div>
                     <!-- Email -->
                     <div class="field input">
                         <label>User Name</label>
@@ -48,17 +40,12 @@ include "header.php";
                         <input type="password" name="pass" placeholder="Enter new password">
                         <i class="fa-solid fa-eye show-ico"></i>
                     </div>
-                    <!-- Profile picture Old Version-->
-                    <!-- <div class="field image">
-                        <label>Select Image</label>
-                        <input type="file" name="image" accept="image/*">
-                    </div> -->
                     <!-- Submit -->
                     <div class="field sub-btn">
                         <input type="submit" name="save" value="Continue to Chat">
                     </div>
-    
-    
+
+
                 </form>
                 <!--Form End-->
                 <div class="link">Already signed up? <a href="index.php">Login now </a></div>
