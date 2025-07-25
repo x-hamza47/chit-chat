@@ -1,5 +1,8 @@
 <?php
 
+use App\Message;
+use App\User;
+
 require_once __DIR__ . '/BaseHandler.php';
 
 class ChatHandler extends BaseHandler
@@ -15,15 +18,12 @@ class ChatHandler extends BaseHandler
 
             case 'init':
                 $this->addConnection($decoded['user_id'], $conn);
-                $this->updateStatus($decoded['user_id'], 'Active');
+                User::updateStatus($decoded['user_id'], 'Active');
                 $this->broadcastStatus($decoded['user_id'], 'Active');
                 break;
 
             case 'message':
-                $this->sendMessage($decoded);
-                if (isset($conn->user_id) && $conn->user_id == $decoded['from']) {
-                    $this->saveMessage($decoded['from'], $decoded['to'], $decoded['message']);
-                }
+                $this->saveAndSendMessage($decoded['from'], $decoded['to'], $decoded['message']);
                 break;
 
             case 'mark_read':
@@ -47,57 +47,32 @@ class ChatHandler extends BaseHandler
         }
     }
 
-
-    // ! Send Message 
-    private function sendMessage($data)
+    private function saveAndSendMessage($from, $to, $message)
     {
         date_default_timezone_set('Asia/Karachi');
         $date = date('h:i A');
-        $is_read = (isset($this->activeChats[$data['to']]) && $this->activeChats[$data['to']] == $data['from']);
+        $is_read = (isset($this->activeChats[$to]) && $this->activeChats[$to] == $from) ? 1 : 0;
 
+        // ! Store message in database
+        Message::forUser($from)->withUser($to)->storeMessage($message, $is_read);
+
+        // ! Send message to user
         $messagePayload = json_encode([
             "type" => "message",
-            "from" => $data['from'],
-            "to" => $data['to'],
-            "message" => $data['message'],
+            "from" => $from,
+            "to" => $to,
+            "message" => $message,
             "time" => $date,
         ]);
 
-        foreach([$data['from'],$data['to']] as $uid){
+        foreach ([$from, $to] as $uid) {
             $conn = $this->getConnection($uid);
             if ($conn) $conn->send($messagePayload);
         }
 
-       
         if ($is_read) {
-            $this->notifySenderRead($data['to'], $data['from']); 
-            // $this->notifySenderRead($data['from'], $data['to']); 
+            $this->notifySenderRead($to, $from);
         }
-
-    }
-
-    // ! Store message in database
-    private function saveMessage($from, $to, $message)
-    {
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "chat_app";
-
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        if (!$conn) {
-            echo "Database Connection Error : " . $conn->connect_error;
-        }
-
-        $is_read = (isset($this->activeChats[$to]) && $this->activeChats[$to] == $from) ? 1 : 0;
-
-        $sql = $conn->prepare("INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg, is_read)
-        VALUES (?, ?, ?, ?)");
-        $sql->bind_param("sssi", $to, $from, $message, $is_read);
-        $sql->execute();
-        $sql->close();
-        $conn->close();
     }
 
     // ! Connection Close
@@ -107,7 +82,7 @@ class ChatHandler extends BaseHandler
             $user_id = $conn->user_id;
 
             $this->removeConnection($user_id); // * Removing connection
-            $this->updateStatus($user_id, 'Offline'); // * Update offline status
+            User::updateStatus($user_id, 'Offline'); // * Update offline status
             $this->broadcastStatus($user_id, 'Offline'); // * Sending status to other users
             $this->setActiveChat($user_id, null);
         }
