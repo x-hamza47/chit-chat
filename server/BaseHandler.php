@@ -1,5 +1,8 @@
 <?php
 
+use App\User;
+use App\Message;
+
 class BaseHandler {
 
     protected $users = [];
@@ -7,6 +10,9 @@ class BaseHandler {
 
 
     protected function broadcastStatus($user_id, $status){
+
+        User::updateStatus($user_id, $status);
+
         $payload = json_encode([
             'type' => 'status_update',
             'user_id' => $user_id,
@@ -22,25 +28,16 @@ class BaseHandler {
 
     protected function markMessagesAsRead($from, $to)
     {
-        // if (!isset($this->activeChats[$from]) || $this->activeChats[$from] != $to) {
-        //     return;
-        // }
         // From is sender and To is reciever
         if ($from === $to) {
-            return; // same user, ignore
+            return; 
         }
-        $conn = new mysqli('localhost', 'root', '', 'chat_app');
 
-        $sql = $conn->prepare("UPDATE messages SET is_read = 1 
-                           WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = false");
-        $sql->bind_param("ss", $from, $to);
-        $sql->execute();
+        $read = Message::forUser($from)->withUser($to)->markAsRead();
 
-        // if ($sql->affected_rows > 0) { 
+        if ($read) { 
             $this->notifySenderRead($from, $to);
-        // }
-        $sql->close();
-        $conn->close();
+        }
 
     }
 
