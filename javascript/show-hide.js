@@ -1,12 +1,12 @@
-const passField = document.querySelector(".form .field input[type='password']"),
-eyebtn = document.querySelector(".form .field i");
+const passField = $(".form .field input[type='password']"),
+eyebtn = $(".form .field i");
 
-eyebtn.onclick = () =>{
+eyebtn.click = () =>{
     if(passField.type == 'password'){
-        eyebtn.classList.replace('fa-eye' ,'fa-eye-slash');
+        eyebtn.classList.replace('fa-eye', 'fa-eye-slash');
         passField.type = "text";
     }else{
         passField.type = "password";
-        eyebtn.classList.replace('fa-eye-slash' ,'fa-eye');
+        eyebtn.classList.replace('fa-eye-slash', 'fa-eye');
     }
 }

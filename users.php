@@ -59,5 +59,6 @@ if (!$user) {
     const CURRENT_USER_ID = "<?= $_SESSION['unique_id']; ?>";
 </script>
 <script src="javascript/users.js"></script>
+<script src="javascript/search.js"></script>
 
 </html>

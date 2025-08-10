@@ -60,7 +60,7 @@ $online = ($user['status'] == 'Active') ? 'online' : '';
             </section>
         </div>
     </div>
-    <script src="javascript/chat.js"></script>
+    <script type="module" src="javascript/chat.js"></script>
 
 </body>
 
