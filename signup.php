@@ -70,7 +70,7 @@ include "header.php";
     </script>
 </body>
 <!-- <script src="javascript/Auth.js"></script> -->
-<script src="javascript/show-hide.js"></script>
-<script type="module" src="javascript/auth-handler.js"></script>
+<script type="module" src="./javascript/auth-handler.js"></script>
+<script src="./javascript/show-hide.js"></script>
 
 </html>

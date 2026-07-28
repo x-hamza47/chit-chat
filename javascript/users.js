@@ -3,10 +3,9 @@ $(document).ready(function () {
     Notification.requestPermission();
   }
 
-  const socket = new WebSocket("ws://192.168.1.110:2346");
+  const socket = new WebSocket("ws://192.168.100.144:2346");
 
   socket.onopen = function () {
-    console.log("✅ Connected to server");
 
     socket.send(
       JSON.stringify({
@@ -41,10 +40,10 @@ $(document).ready(function () {
     }
     //!typing indicators end
 
-    if (data.type == "read_update") {
-      console.log("📥 Read update received:", data);
-      $(`#lastmsg-${data.from} .tick-icon`).addClass("readed");
-    }
+   if (data.type == "read_update") {
+     const target = $(`#lastmsg-${data.from} .tick-icon`);
+     target.addClass("readed");
+   }
   };
 
   function updateUserStatus(userId, status) {

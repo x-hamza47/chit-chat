@@ -11,16 +11,16 @@ if (!isset($_SESSION['unique_id'])) {
     exit;
 }
 
-$outgoing_id = $_SESSION['unique_id'];
-$incoming_id = $_POST['inco_id'] ?? null;
+$current_user_id = $_SESSION['unique_id'];
+$other_user_id = $_POST['other_user_id'] ?? null;
 
-if (!$incoming_id) {
+if (!$other_user_id) {
     echo "No user selected";
     exit;
 }
 
-$messages = Message::forUser($outgoing_id)
-    ->withUser($incoming_id)
+$messages = Message::forUser($current_user_id)
+    ->withUser($other_user_id)
     ->get();
 
 $output = "";
@@ -31,13 +31,13 @@ foreach ($messages as $msg) {
     $time = date('h:i A', strtotime($msg['created_at']));
     $readed = ($msg['is_read']) ? '#4fa6f7ff' : '#ccc';
 
-    if ($msg['outgoing_msg_id'] == $outgoing_id) {
+    if ($msg['outgoing_msg_id'] == $current_user_id) {
         $output .= '<div class="chat outgoing">
                         <div class="details">
                             <p>' . htmlspecialchars($msg['msg']) . '</p>
                             <div class="meta">
                                 <span class="time">' . $time . '</span>
-                                <span class="tick-icon ' . (($msg['is_read']) ? 'readed': '') . '">
+                                <span class="tick-icon ' . (($msg['is_read']) ? 'readed' : '') . '">
                                     <svg width="15" height="15" viewBox="3 0 25 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4 12L8 16L20 4" stroke="' . $readed . '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         <path d="M11 12L15 16L27 4" stroke="' . $readed . '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

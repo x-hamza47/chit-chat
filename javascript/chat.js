@@ -1,36 +1,40 @@
 import ChatSocket from "./modules/ChatSocket.js";
-import { appendMessage, updateUserStatus, scrollDown } from "./utils/chat-ui.js";
+import {
+  appendMessage,
+  updateUserStatus,
+  scrollDown,
+} from "./utils/chat-ui.js";
 
 $(document).ready(function () {
   const chat_form = $(".typing-area");
   const input_field = $(".input-field");
   const chat_bx = $(".chat-box");
   const chat_sendBtn = $("button");
-  const in_go = $("#in").val(); //* Chatting with
-  const out_go = $("#out").val(); //* Current User (you)
 
-    chat_form.submit((e) => {
-      e.preventDefault();
-    });
+  const current_user_id = $("#current-user").val(); // You
+  const other_user_id = $("#other-user").val(); // Person you're chatting with
+
+  chat_form.submit((e) => {
+    e.preventDefault();
+  });
+
   const socket = new ChatSocket({
-    url: "ws://192.168.1.110:2346",
-    user_id: out_go,
+    url: "ws://192.168.100.144:2346",
+    user_id: current_user_id,
   });
 
   $.ajax({
     url: "php/get-chat.php",
     type: "POST",
-    data: { inco_id: in_go },
+    data: { other_user_id: other_user_id },
     success: function (data) {
       chat_bx.html(data);
-
-      // if (!chat_bx.hasClass("active")) {
       scrollDown();
-      // }
+
       socket.send({
         type: "mark_read",
-        from: out_go,
-        to: in_go,
+        from: current_user_id,
+        to: other_user_id,
       });
     },
   });
@@ -39,18 +43,18 @@ $(document).ready(function () {
   socket.on("open", () => {
     socket.send({
       type: "chat_focus",
-      user_id: out_go,
-      chatting_with: in_go,
+      user_id: current_user_id,
+      chatting_with: other_user_id,
     });
   });
 
   // ! Message
   socket.on("message", (data) => {
     if (
-      (data.from == in_go && data.to == out_go) ||
-      (data.from == out_go && data.to == in_go)
+      (data.from == other_user_id && data.to == current_user_id) ||
+      (data.from == current_user_id && data.to == other_user_id)
     ) {
-      appendMessage(data, out_go);
+      appendMessage(data, current_user_id);
     }
   });
 
@@ -77,14 +81,14 @@ $(document).ready(function () {
 
     socket.send({
       type: "message",
-      from: out_go,
-      to: in_go,
+      from: current_user_id,
+      to: other_user_id,
       message: message,
     });
     socket.send({
       type: "new_message",
-      from: out_go,
-      to: in_go,
+      from: current_user_id,
+      to: other_user_id,
     });
     input_field.val("");
     scrollDown();
@@ -95,19 +99,18 @@ $(document).ready(function () {
 
   input_field.on("input", () => {
     socket.send({
-        type: "typing",
-        from: out_go,
-        to: in_go,
+      type: "typing",
+      from: current_user_id,
+      to: other_user_id,
     });
 
     clearTimeout(typingTimeout);
     typingTimeout = setTimeout(() => {
       socket.send({
-          type: "stop_typing",
-          from: out_go,
-          to: in_go,
-        });
+        type: "stop_typing",
+        from: current_user_id,
+        to: other_user_id,
+      });
     }, 1000);
-  }); // ! Typin indication end
-
+  });
 });
