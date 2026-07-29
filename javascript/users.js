@@ -3,7 +3,9 @@ $(document).ready(function () {
     Notification.requestPermission();
   }
 
-  const socket = new WebSocket("ws://192.168.100.144:2346");
+  const protocol = location.protocol === "https:" ? "wss" : "ws";
+  const socket = new WebSocket(`${protocol}://${location.host}`);
+  // const socket = new WebSocket("ws://localhost:2346");
 
   socket.onopen = function () {
 
