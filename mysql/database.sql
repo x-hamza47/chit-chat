@@ -43,3 +43,4 @@ ALTER TABLE messages
 
 CREATE INDEX idx_incoming ON messages (incoming_msg_id);
 CREATE INDEX idx_outgoing ON messages (outgoing_msg_id);
+
