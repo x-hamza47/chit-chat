@@ -16,11 +16,11 @@ class DB
 
     public function __construct()
     {
-        $this->host = $_ENV['DB_HOST'];
-        $this->port = $_ENV['DB_PORT'] ?? 3306;
-        $this->db_name = $_ENV['DB_NAME'];
-        $this->username = $_ENV['DB_USER'];
-        $this->password = $_ENV['DB_PASS'];
+        $this->host = $_ENV['DB_HOST'] ?? getenv('DB_HOST');
+        $this->port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: 3306;
+        $this->db_name = $_ENV['DB_NAME'] ?? getenv('DB_NAME');
+        $this->username = $_ENV['DB_USER'] ?? getenv('DB_USER');
+        $this->password = $_ENV['DB_PASS'] ?? getenv('DB_PASS');
 
         if (!self::$conn) {
             $this->connect();
