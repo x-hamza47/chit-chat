@@ -17,17 +17,17 @@ $(document).ready(function () {
   chat_form.submit((e) => {
     e.preventDefault();
   });
-  // const wsProtocol = location.protocol === "https:" ? "wss" : "ws";
-
-  // const socket = new ChatSocket({
-  //   url: `${wsProtocol}://${location.host}`,
-  //   user_id: current_user_id,
-  // });
+  const wsProtocol = location.protocol === "https:" ? "wss" : "ws";
 
   const socket = new ChatSocket({
-    url: "ws://localhost:2346",
+    url: `${wsProtocol}://${location.host}/ws`,
     user_id: current_user_id,
   });
+
+  // const socket = new ChatSocket({
+  //   url: "ws://localhost:2346",
+  //   user_id: current_user_id,
+  // });
 
   $.ajax({
     url: "php/get-chat.php",

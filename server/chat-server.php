@@ -6,7 +6,7 @@ use Workerman\Connection\TcpConnection;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/ChatHandler.php';
 
-$port = getenv('PORT') ?: 2346;
+$port = 8081;
 
 $ws_worker = new Worker("websocket://0.0.0.0:$port");
 // ? WebSocket server on port 2346
